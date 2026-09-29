@@ -45,8 +45,10 @@
 N/A
 
 == Problems Encountered
+Quartus took a long time to get working. On Arch linux, the AUR install of `quartus-free` required me to get a license file from Altera and add it to my environment variables. I also had to change the flag `--novopt` in the menu which runs Questa to `--voptargs="+acc"`. 
 
 == Applications
+State machines are hugely important because they are able to hold information and act upon that information. Some of the most basic components of computers are built from stateful electronics (RAM, registers, etc.). The ability to store information other than user input opens up the opportunity to perform sequential operations, when input of one cycle operates on output of a last.
 
 #pagebreak()
 
@@ -165,8 +167,11 @@ N/A
 + *Now do the same thing, except put the NOT gate in front of R instead. What is the relationship between the single input and Q?*\
   Now, when the input is high and the clock is pulsed, Q will be driven high, and when the input is low and the clock is pulsed, Q will be driven low. This is the behavior of a D flip-flop.
 + *What are don't-care entries in an NSTT and why are they useful when simplifying logic?*\
+  Don't care entries are entries which can be freely assumed to represent 1 or 0 in order to allow for more simplification in the circuit design. They represent values corresponding to invalid states or unused bits in a NSTT.
 + *Why do we need flip-flops to build a counter? Why can't we build one with only combinational logic?*\
+  A counter cannot be built with combinational logic because it needs to hold state in order to know what number is next. Combinational logic cannot be stateful, and so will always have an output fully determined by the inputs.
 + *Describe D, SR, JK, and T flip-flops: what inputs does each use, and how does Q change on a clock edge for each?*\
+  A D flip-flop stores whatever bit is on the D (data) line on a clock edge. An SR flip-flop, on a clock edge, is set when the S line is high and the R line is low, and unset when the R line is high and the S is high. It is unaffected when both are low, and undefined when both are high. A JK flip-flop is similar to an SR flip-flop, except that it toggles when both are high. A T flip-flop toggles on a clock edge when the T line is high, and does nothing when it is low. 
 === Part 1: SR latch & SR flip-flop
 === Part 2: 2-bit counter
 #nstt(
@@ -219,25 +224,26 @@ $rc("GO(H)", #red)$
   implicants: ((4, 5),)
 )
 $rc("GO(H)"nt(Q_0), #red)$
+#image("images/simannoted.png")
 === Part 3: 3-bit bidirectional counter with output logic
 #nstt(
   ("Q2","Q1","Q0","F(H)"),("Q2+","Q1+","Q0+","Y3","Y2","Y1","Y0"),
-  0, 0, 0, 0,    1, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 1,    0, 0, 1, 0, 0, 0, 0,
-  0, 0, 1, 0,    0, 0, 0, 0, 0, 0, 0,
-  0, 0, 1, 1,    0, 1, 1, 0, 0, 0, 0,
-  0, 1, 0, 0,    "X", "X", "X", "X", "X", "X", "X",
-  0, 1, 0, 1,    "X", "X", "X", "X", "X", "X", "X",
-  0, 1, 1, 0,    0, 0, 1, 0, 0, 0, 0,
-  0, 1, 1, 1,    1, 1, 0, 0, 0, 0, 0,
-  1, 0, 0, 0,    1, 1, 0, 0, 0, 0, 0,
-  1, 0, 0, 1,    0, 0, 0, 0, 0, 0, 0,
-  1, 0, 1, 0,    "X", "X", "X", "X", "X", "X", "X",
-  1, 0, 1, 1,    "X", "X", "X", "X", "X", "X", "X",
-  1, 1, 0, 0,    0, 1, 1, 0, 0, 0, 0,
-  1, 1, 0, 1,    1, 0, 0, 0, 0, 0, 0,
-  1, 1, 1, 0,    "X", "X", "X", "X", "X", "X", "X",
-  1, 1, 1, 1,    "X", "X", "X", "X", "X", "X", "X",
+  0, 0, 0, 0,    1, 0, 0,         0, 0, 1, 0,
+  0, 0, 0, 1,    0, 0, 1,         0, 1, 0, 1,
+  0, 0, 1, 0,    0, 0, 0,         0, 1, 0, 0,
+  0, 0, 1, 1,    0, 1, 1,         1, 0, 1, 0,
+  0, 1, 0, 0,    "X", "X", "X",   "X", "X", "X", "X",
+  0, 1, 0, 1,    "X", "X", "X",   "X", "X", "X", "X",
+  0, 1, 1, 0,    0, 0, 1,         0, 1, 0, 1,
+  0, 1, 1, 1,    1, 1, 0,         1, 0, 1, 1,
+  1, 0, 0, 0,    1, 1, 0,         1, 0, 1, 1,
+  1, 0, 0, 1,    0, 0, 0,         0, 1, 0, 0,
+  1, 0, 1, 0,    "X", "X", "X",   "X", "X", "X", "X",
+  1, 0, 1, 1,    "X", "X", "X",   "X", "X", "X", "X",
+  1, 1, 0, 0,    0, 1, 1,         1, 0, 1, 0,
+  1, 1, 0, 1,    1, 0, 0,         0, 0, 1, 0,
+  1, 1, 1, 0,    "X", "X", "X",   "X", "X", "X", "X",
+  1, 1, 1, 1,    "X", "X", "X",   "X", "X", "X", "X",
 )
 
 *D0*
@@ -351,3 +357,4 @@ $= nt(Y_1)$
   implicants: ((3,6),),
 )
 $rc(Q_1, #red)$
+
