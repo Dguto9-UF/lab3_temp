@@ -171,8 +171,12 @@ State machines are hugely important because they are able to hold information an
 + *Why do we need flip-flops to build a counter? Why can't we build one with only combinational logic?*\
   A counter cannot be built with combinational logic because it needs to hold state in order to know what number is next. Combinational logic cannot be stateful, and so will always have an output fully determined by the inputs.
 + *Describe D, SR, JK, and T flip-flops: what inputs does each use, and how does Q change on a clock edge for each?*\
-  A D flip-flop stores whatever bit is on the D (data) line on a clock edge. An SR flip-flop, on a clock edge, is set when the S line is high and the R line is low, and unset when the R line is high and the S is high. It is unaffected when both are low, and undefined when both are high. A JK flip-flop is similar to an SR flip-flop, except that it toggles when both are high. A T flip-flop toggles on a clock edge when the T line is high, and does nothing when it is low. 
+  A D flip-flop stores whatever bit is on the D (data) line on a clock edge. An SR flip-flop, on a clock edge, is set when the S line is high and the R line is low, and unset when the R line is high and the S is high. It is unaffected when both are low, and undefined when both are high. A JK flip-flop is similar to an SR flip-flop, except that it toggles when both are high. A T flip-flop toggles on a clock edge when the T line is high, and does nothing when it is low.
+#pagebreak()
 === Part 1: SR latch & SR flip-flop
+#image("images/srlatch.png")
+#image("images/srflipflop.png")
+#pagebreak()
 === Part 2: 2-bit counter
 #nstt(
   ("Q1", "Q0", "GO(H)"), ("Q1+", "Q0+"),
@@ -224,6 +228,7 @@ $rc("GO(H)", #red)$
   implicants: ((4, 5),)
 )
 $rc("GO(H)"nt(Q_0), #red)$
+#image("images/part2.png")
 #image("images/simannoted.png")
 === Part 3: 3-bit bidirectional counter with output logic
 #nstt(
@@ -358,3 +363,4 @@ $= nt(Y_1)$
 )
 $rc(Q_1, #red)$
 
+#image("images/part3.png")
