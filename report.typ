@@ -168,16 +168,20 @@ State machines are hugely important because they are able to hold information an
   Now, when the input is high and the clock is pulsed, Q will be driven high, and when the input is low and the clock is pulsed, Q will be driven low. This is the behavior of a D flip-flop.
 + *What are don't-care entries in an NSTT and why are they useful when simplifying logic?*\
   Don't care entries are entries which can be freely assumed to represent 1 or 0 in order to allow for more simplification in the circuit design. They represent values corresponding to invalid states or unused bits in a NSTT.
+  #colbreak()
 + *Why do we need flip-flops to build a counter? Why can't we build one with only combinational logic?*\
   A counter cannot be built with combinational logic because it needs to hold state in order to know what number is next. Combinational logic cannot be stateful, and so will always have an output fully determined by the inputs.
 + *Describe D, SR, JK, and T flip-flops: what inputs does each use, and how does Q change on a clock edge for each?*\
   A D flip-flop stores whatever bit is on the D (data) line on a clock edge. An SR flip-flop, on a clock edge, is set when the S line is high and the R line is low, and unset when the R line is high and the S is high. It is unaffected when both are low, and undefined when both are high. A JK flip-flop is similar to an SR flip-flop, except that it toggles when both are high. A T flip-flop toggles on a clock edge when the T line is high, and does nothing when it is low.
 #pagebreak()
 === Part 1: SR latch & SR flip-flop
+SR latch:
 #image("images/srlatch.png")
+SR flip-flop:
 #image("images/srflipflop.png")
 #pagebreak()
 === Part 2: 2-bit counter
+NSTT:
 #nstt(
   ("Q1", "Q0", "GO(H)"), ("Q1+", "Q0+"),
   0, 0, 0, "X", "X",
@@ -189,48 +193,61 @@ State machines are hugely important because they are able to hold information an
   1, 1, 0, 1, 1,
   1, 1, 1, 1, 0
 )
-*D0*
-#karnaugh(
-  "4x2",
-  labels: ("GO(H)", "Q0", "Q1"),
-  manual-terms: (
-    "X", 0, 1, 1,
-    "X", 1, 1, 0
-  ),
-  implicants: ((2, 3), (4, 5),),
-  corner-implicants: true,
+Karnaugh maps:
+#let rc(n, color) = rect(stroke: 2pt + color, radius: 5pt, inset: 4.5pt)[#n]
+#table(
+  columns: (auto, auto, 1fr),
+  align: (left + horizon, center + horizon, left + horizon),
+  inset: 8pt,
+  // D0
+  [*D0*],
+  [#karnaugh(
+    "4x2",
+    labels: ("GO(H)", "Q0", "Q1"),
+    manual-terms: (
+      "X", 0, 1, 1,
+      "X", 1, 1, 0
+    ),
+    implicants: ((2, 3), (4, 5),),
+    corner-implicants: true,
+  )],
+  [
+    $rc(nt(Q_1), #blue) + rc("GO(H)" nt(Q_0), #green) + rc(nt("GO(H)")Q_0, #red)$\
+    $=nt(Q_1) + ("GO(H)" xor Q_0)$
+  ],
+  // J1
+  [*J1*],
+  [#karnaugh(
+    "4x2",
+    labels: ("GO(H)", "Q0", "Q1"),
+    manual-terms: (
+      "X", "X", 0, "X",
+      "X", "X", 1, "X",
+    ),
+    implicants: ((4, 6),),
+  )],
+  [$rc("GO(H)", #red)$],
+  // K1
+  [*K1*],
+  [#karnaugh(
+    "4x2",
+    labels: ("GO(H)", "Q0", "Q1"),
+    manual-terms: (
+      "X", 0, "X", 0,
+      "X", 1, "X", 0,
+    ),
+    implicants: ((4, 5),)
+  )],
+  [$rc("GO(H)"nt(Q_0), #red)$],
 )
-#let rc(n, color) = rect(stroke: 2pt + color, radius: 5pt)[#n]
-$rc(nt(Q_1), #blue) + rc("GO(H)" nt(Q_0), #green) + rc(nt("GO(H)")Q_0, #red)$\
-$=nt(Q_1) + ("GO(H)" xor Q_0)$
-
-*J1*
-#karnaugh(
-  "4x2",
-  labels: ("GO(H)", "Q0", "Q1"),
-  manual-terms: (
-    "X", "X", 0, "X",
-    "X", "X", 1, "X",
-  ),
-  implicants: ((4, 6),),
-)
-
-$rc("GO(H)", #red)$
-
-*K1*
-#karnaugh(
-  "4x2",
-  labels: ("GO(H)", "Q0", "Q1"),
-  manual-terms: (
-    "X", 0, "X", 0,
-    "X", 1, "X", 0,
-  ),
-  implicants: ((4, 5),)
-)
-$rc("GO(H)"nt(Q_0), #red)$
-#image("images/part2.png")
+#pagebreak()
+Circuit: 
+#image("images/part2.png", width: 75%)
+Simulation results:
 #image("images/simannoted.png")
+
 === Part 3: 3-bit bidirectional counter with output logic
+NSTT:
 #nstt(
   ("Q2","Q1","Q0","F(H)"),("Q2+","Q1+","Q0+","Y3","Y2","Y1","Y0"),
   0, 0, 0, 0,    1, 0, 0,         0, 0, 1, 0,
@@ -250,68 +267,85 @@ $rc("GO(H)"nt(Q_0), #red)$
   1, 1, 1, 0,    "X", "X", "X",   "X", "X", "X", "X",
   1, 1, 1, 1,    "X", "X", "X",   "X", "X", "X", "X",
 )
+#pagebreak()
+Karnaugh maps for state bits:
+#table(
+  columns: (auto, auto, 1fr),
+  align: (left + horizon, center + horizon, left + horizon),
+  inset: 8pt,
 
-*D0*
-#karnaugh(
-  "4x4",
-  labels: ("Q2", "Q1", "Q0", "F"),
-  manual-terms: (
-    0, 1, 0, 1,
-    "X", "X", 1, 0,
-    0, 0, "X", "X",
-    1, 0, "X", "X",
-  ),
-  implicants: ((1, 3),),
-  horizontal-implicants: ((4, 14),)
-)
-$rc(F nt(Q_2) nt(Q_1),#red) + rc(nt(F) Q_1,#green)$
+  // D0
+  [*D0*],
+  [#karnaugh(
+    "4x4",
+    labels: ("Q2", "Q1", "Q0", "F"),
+    manual-terms: (
+      0, 1, 0, 1,
+      "X", "X", 1, 0,
+      0, 0, "X", "X",
+      1, 0, "X", "X",
+    ),
+    implicants: ((1, 3),),
+    horizontal-implicants: ((4, 14),)
+  )],
+  [$rc(F nt(Q_2) nt(Q_1),#red) + rc(nt(F) Q_1,#green)$],
 
-*T1*
-#karnaugh(
-  "4x4",
-  labels: ("Q2", "Q1", "Q0", "F"),
-  manual-terms: (
-    0, 0, 0, 1,
-    "X", "X", 1, 0,
-    1, 0, "X", "X",
-    0, 1, "X", "X",
-  ),
-  vertical-implicants: ((3, 11),),
-  horizontal-implicants: ((8,10),),
-  implicants: ((6, 14),(13,15))
-)
-$rc(Q_0 F nt(Q_1),#teal) + rc(Q_0 nt(F) Q_1,#red) + rc(nt(F) nt(Q_1) Q_2,#blue) + rc(F Q_1 Q_2,#green)$\
-$= Q_0(F xor Q_1) + Q_2(F dot.o Q_1)$\
-*J2*
-#karnaugh(
-  "4x4",
-  labels: ("Q2", "Q1", "Q0", "F"),
-  manual-terms: (
-    1, 0, 0, 0,
-    "X", "X", 0, 1,
-    "X", "X", "X", "X",
-    "X", "X", "X", "X",
-  ),
-  implicants: ((0,8),(5,15)),
-)
-$rc(nt(Q_0) nt(F), #red) + rc(F Q_1, #green)$
+  // T1
+  [*T1*],
+  [#karnaugh(
+    "4x4",
+    labels: ("Q2", "Q1", "Q0", "F"),
+    manual-terms: (
+      0, 0, 0, 1,
+      "X", "X", 1, 0,
+      1, 0, "X", "X",
+      0, 1, "X", "X",
+    ),
+    vertical-implicants: ((3, 11),),
+    horizontal-implicants: ((8,10),),
+    implicants: ((6, 14),(13,15))
+  )],
+  [
+    $rc(Q_0 F nt(Q_1),#teal) + rc(Q_0 nt(F) Q_1,#red) + rc(nt(F) nt(Q_1) Q_2,#blue) + rc(F Q_1 Q_2,#green)$\
+    $= Q_0(F xor Q_1) + Q_2(F dot.o Q_1)$
+  ],
 
-*K2*
-#karnaugh(
-  "4x4",
-  labels: ("Q2", "Q1", "Q0", "F"),
-  manual-terms: (
-    "X", "X", "X", "X",
-    "X", "X", "X", "X",
-    0, 1, "X", "X",
-    1, 0, "X", "X",
-  ),
-  vertical-implicants: ((9,3),),
-  horizontal-implicants: ((4,14),)
-)
-$rc(nt(F) Q_1, #red) + rc(F nt(Q_1), #green)$\
-$= F xor Q_1$
+  // J2
+  [*J2*],
+  [#karnaugh(
+    "4x4",
+    labels: ("Q2", "Q1", "Q0", "F"),
+    manual-terms: (
+      1, 0, 0, 0,
+      "X", "X", 0, 1,
+      "X", "X", "X", "X",
+      "X", "X", "X", "X",
+    ),
+    implicants: ((0,8),(5,15)),
+  )],
+  [$rc(nt(Q_0) nt(F), #red) + rc(F Q_1, #green)$],
 
+  // K2
+  [*K2*],
+  [#karnaugh(
+    "4x4",
+    labels: ("Q2", "Q1", "Q0", "F"),
+    manual-terms: (
+      "X", "X", "X", "X",
+      "X", "X", "X", "X",
+      0, 1, "X", "X",
+      1, 0, "X", "X",
+    ),
+    vertical-implicants: ((9,3),),
+    horizontal-implicants: ((4,14),)
+  )],
+  [
+    $rc(nt(F) Q_1, #red) + rc(F nt(Q_1), #green)$\
+    $= F xor Q_1$
+  ],
+)
+#pagebreak()
+State decoding truth table:
 #truth_table(
   ("Q2", "Q1", "Q0"), ("Y3", "Y2", "Y1", "Y0"),
   0, 0, 0,   0, 1, 0, 0,
@@ -323,44 +357,60 @@ $= F xor Q_1$
   1, 1, 0,   1, 0, 1, 1,
   1, 1, 1,   "X", "X", "X", "X",
 )
+#pagebreak()
+Output bit Karnaugh maps:
+#table(
+  columns: (auto, auto, 1fr),
+  align: (left + horizon, center + horizon, left + horizon),
+  inset: 8pt,
 
-*Y0*
-#karnaugh(
-  "2x4",
-  labels: ("Q2", "Q1", "Q0"),
-  manual-terms: (0, 1, "X", 0, 0, "X", 1, "X"),
-  implicants: ((6,2),),
-  vertical-implicants: ((1,5),)
+  // Y0
+  [*Y0*],
+  [#karnaugh(
+    "2x4",
+    labels: ("Q2", "Q1", "Q0"),
+    manual-terms: (0, 1, "X", 0, 0, "X", 1, "X"),
+    implicants: ((6,2),),
+    vertical-implicants: ((1,5),)
+  )],
+  [
+    $rc(nt(Q_0) Q_1,#red) + rc(Q_0 nt(Q_1),#green)$\
+    $= Q_0 xor Q_1$
+  ],
+
+  // Y1
+  [*Y1*],
+  [#karnaugh(
+    "2x4",
+    labels: ("Q2", "Q1", "Q0"),
+    manual-terms: (0, 0, "X", 1, 1, "X", 1, "X"),
+    implicants: ((2,7),(6,5)),
+  )],
+  [$rc(Q_1, #red) + rc(Q_2, #green)$],
+
+  // Y2
+  [*Y2*],
+  [#karnaugh(
+    "2x4",
+    labels: ("Q2", "Q1", "Q0"),
+    manual-terms: (1, 1, "X", 0, 0, "X", 0, "X"),
+    implicants: ((0,1),),
+  )],
+  [
+    $rc(nt(Q_2) nt(Q_1), #red)$\
+    $= nt(Y_1)$
+  ],
+
+  // Y3
+  [*Y3*],
+  [#karnaugh(
+    "2x4",
+    labels: ("Q2", "Q1", "Q0"),
+    manual-terms: (0, 0, "X", 1, 0, "X", 1, "X"),
+    implicants: ((3,6),),
+  )],
+  [$rc(Q_1, #red)$],
 )
-$rc(nt(Q_0) Q_1,#red) + rc(Q_0 nt(Q_1),#green)$\
-$= Q_0 xor Q_1$
-
-*Y1*
-#karnaugh(
-  "2x4",
-  labels: ("Q2", "Q1", "Q0"),
-  manual-terms: (0, 0, "X", 1, 1, "X", 1, "X"),
-  implicants: ((2,7),(6,5)),
-)
-$rc(Q_1, #red) + rc(Q_2, #green)$
-
-*Y2*
-#karnaugh(
-  "2x4",
-  labels: ("Q2", "Q1", "Q0"),
-  manual-terms: (1, 1, "X", 0, 0, "X", 0, "X"),
-  implicants: ((0,1),),
-)
-$rc(nt(Q_2) nt(Q_1), #red)$
-$= nt(Y_1)$
-
-*Y3*
-#karnaugh(
-  "2x4",
-  labels: ("Q2", "Q1", "Q0"),
-  manual-terms: (0, 0, "X", 1, 0, "X", 1, "X"),
-  implicants: ((3,6),),
-)
-$rc(Q_1, #red)$
-
+#pagebreak()
+Circuit:
 #image("images/part3.png")
